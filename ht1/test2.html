@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=UTF-8>
+    <style type="text/css">
+    body {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    div {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    button {
+        z-index: -1;
+        position: absolute;
+        height: 100px;
+        width: 1000px;
+        margin-left: -500px;
+        margin-top: -50px;
+        left: 50%;
+        top: 50%;
+        text-align: center;
+        font-size: 500%
+    }
+    </style>
+    <script type="text/javascript" src="alert.js"></script>
+    <script type="text/javascript">
+    function clickit() {
+        var m = document.getElementById("but");
+        if (!m.show) {
+            m.show = true;
+            m.style.display = "inline";
+            m.style.top = "0px";
+            m.style.left = "0px";
+            console.log(m.closekey);
+        }
+        var m1 = document.getElementById("so");
+        if (!m1.show) {
+            m1.show = true;
+            m1.style.display = "inline";
+            m1.style.top = "0px";
+            m1.style.right = "0px";
+        }
+        var m2 = document.getElementById("anyway");
+        if (!m2.show) {
+            m2.show = true;
+            m2.style.display = "inline";
+            m2.style.bottom = "0px";
+            m2.style.right = "0px";
+            m2.style.fontSize = "40px";
+        }
+    }
+    </script>
+    <title></title>
+</head>
+
+<body>
+    <button onclick="clickit()">一共就这一个按钮</button>
+</body>
+
+</html>
