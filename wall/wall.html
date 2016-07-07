@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <script src="./socket.io/socket.io.js"></script>
+    <script src="./jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+    var nextindex = 3;
+    var hasadmin = 0;
+    var pos = [1, 2, 3];
+
+    function fd() {
+        var a = document.getElementById("message1");
+        a.style.animation = "myfirst 1s forwards";
+        setTimeout(function() {
+            a.style.animation = "myf 1s forwards";
+        }, 1000)
+    }
+
+    function setmessage(position, msg) {
+        var a = document.getElementById("message" + position);
+        var b = a.getElementsByTagName("h3")
+        if (msg.content.length < 30) {
+            b[0].innerHTML = msg.content;
+        }else{
+            b[0].innerHTML = "<marquee class = \"me\" behavior=\"scroll\">" + msg.content + "</marquee>";
+        }
+        b = a.getElementsByTagName("img")
+        if (msg["headimgurl"] == undefined) {
+            b[0].src = "3.jpeg";
+        } else {
+            b[0].src = msg.headimgurl;
+        }
+        b = a.getElementsByTagName("h4")
+        if (msg.nickname.length <= 5) {
+            b[0].innerHTML = msg.nickname;
+        }else{
+            b[0].innerHTML = "<marquee behavior=\"scroll\">" + msg.nickname + "</marquee>";
+        }
+    }
+    socket = io.connect("https://wall.cgcgbcbc.com/");
+    $.get("https://wall.cgcgbcbc.com/api/messages?num=3", function(response) {
+        setmessage(1, response[0]);
+        setmessage(2, response[1]);
+        setmessage(3, response[2]);
+    })
+
+    function outofgame(t) {
+        var a = document.getElementById("message" + t);
+        a.style.animation = "out 1s forwards";
+        setTimeout(function() {
+            a.style.left = "0%";
+        }, 1000)
+    }
+
+    function normalmessagein(msg) {
+        if (hasadmin > 0) {
+            outofgame(pos[2]);
+
+            setTimeout(function() {
+                setmessage(pos[2], msg);
+                pos = [pos[0], pos[2], pos[1]];
+                var a = document.getElementById("message" + pos[1]);
+                a.style.animation = "in2 1s forwards";
+                var a = document.getElementById("message" + pos[2]);
+                a.style.animation = "down2 1s forwards";
+            }, 1000);
+        } else {
+            outofgame(pos[2]);
+
+            setTimeout(function() {
+                setmessage(pos[2], msg);
+                pos = [pos[2], pos[0], pos[1]];
+                var a = document.getElementById("message" + pos[0]);
+                a.style.animation = "in 1s forwards";
+                var a = document.getElementById("message" + pos[1]);
+                a.style.animation = "down1 1s forwards";
+                var a = document.getElementById("message" + pos[2]);
+                a.style.animation = "down2 1s forwards";
+            }, 1000);
+        }
+    }
+    var tim = 0;
+
+    function adminmessagein(msg) {
+        if (hasadmin > 0) {
+            clearTimeout(tim);
+            tim = setTimeout("clock()", 12000);
+            var a = document.getElementById("message" + hasadmin);
+            a.style.animation = "out2 1s forwards";
+            setTimeout(function() {
+                a.style.left = "0%";
+            }, 1000)
+            setTimeout(function() {
+                setmessage(hasadmin, msg);
+                var a = document.getElementById("message" + hasadmin);
+                a.style.animation = "in 1s forwards";
+            }, 1000)
+        } else {
+            tim = setTimeout("clock()", 12000);
+            hasadmin = pos[2];
+            outofgame(pos[2]);
+            setTimeout(function() {
+                setmessage(pos[2], msg);
+                pos = [pos[2], pos[0], pos[1]];
+                var a = document.getElementById("message" + pos[0]);
+                a.style.animation = "in 1s forwards";
+                var a = document.getElementById("message" + pos[1]);
+                a.style.animation = "down1 1s forwards";
+                var a = document.getElementById("message" + pos[2]);
+                a.style.animation = "down2 1s forwards";
+            }, 1000);
+        }
+    }
+
+
+    function clock() {
+        hasadmin = 0;
+    }
+    socket.on("new message", function(msg) {
+        normalmessagein(msg);
+    });
+    socket.on("admin", function(msg) {
+        adminmessagein(msg);
+    });
+    </script>
+    <style type="text/css">
+    @-webkit-keyframes in {
+        from {
+            top: -30%;
+        }
+        to {
+            top: 5%;
+        }
+    }
+    
+    @-webkit-keyframes in2 {
+        from {
+            top: -30%;
+        }
+        to {
+            top: 35%;
+        }
+    }
+    
+    @-webkit-keyframes out {
+        from {
+            top: 65%;
+            left: 0%;
+        }
+        to {
+            top: 65%;
+            left: -100%;
+        }
+    }
+    
+    @-webkit-keyframes out2 {
+        from {
+            top: 5%;
+            left: 0%;
+        }
+        to {
+            top: 5%;
+            left: -100%;
+        }
+    }
+    
+    @-webkit-keyframes down1 {
+        from {
+            top: 5%;
+        }
+        to {
+            top: 35%;
+        }
+    }
+    
+    @-webkit-keyframes down2 {
+        from {
+            top: 35%;
+        }
+        to {
+            top: 65%;
+        }
+    }
+    
+    .message {
+        position: absolute;
+        display: -moz-box;
+        display: -webkit-box;
+        display: box;
+        height: 25%;
+        width: 90%;
+        left: 0%;
+        margin: 2% 2% 2% 2%;
+        box-shadow:0 0 10px #CCC;
+        background-image: url("4.jpg");
+        background-size:cover;
+    }
+    
+    #message1 {
+        top: 5%;
+    }
+    
+    #message2 {
+        top: 35%;
+    }
+    
+    #message3 {
+        top: 65%;
+    }
+    
+    .me{
+        width:80%;
+    }
+
+    .mar {
+        position: absolute;
+        top: 0;
+        font-size: 2.5rem;
+        background-color: black;
+        color: white;
+        margin-left: 0;
+        left: 0;
+        z-index: 1;
+    }
+    
+    .info {
+        
+        width: 18%;
+        height: 100%;
+    }
+    
+    .head {
+        margin: 0 20% 0 20%;
+        width: 60%;
+        height: 70%;
+    }
+    
+    .name {
+        margin: 10% 0 0 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .content{
+        font-size: 2rem;
+        padding-top: 2%; 
+        width: 100%;
+        font-weight: 1200;
+    }
+    
+    html,
+    body {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        background-image: url("1.jpg");
+        background-size:cover;
+        overflow-x:hidden;
+    }
+    </style>
+</head>
+
+<body>
+    <marquee class = "mar" behavior="scroll">系统公告</marquee>
+    <div id="message1" class="message">
+        <div class="info">
+            <img class="head" src="3.jpeg">
+            <h4 class="name">随便说点什么</h4>
+        </div>
+        <h3 class="content">随便说点什么</h3>
+    </div>
+    <div id="message2" class="message">
+        <div class="info">
+            <img class="head" src="3.jpeg">
+            <h4 class="name">随便说点什么</h4>
+        </div>
+        <h3 class="content">随便说点什么</h3>
+    </div>
+    <div id="message3" class="message">
+        <div class="info">
+            <img class="head" src="3.jpeg">
+            <h4 class="name">随便说点什么</h4>
+        </div>
+        <h3 class="content">随便说点什么</h3>
+    </div>
+    
+
+</html>
